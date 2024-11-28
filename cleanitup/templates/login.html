@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión{% endblock title %}
+
+{% block content %}
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 0; height: 100vh; background: linear-gradient(to bottom right, #D3F1DF, #85A98F); display: flex; align-items: center; justify-content: center;">
+    <div style="background-color: white; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); border-radius: 15px; width: 100%; max-width: 400px; padding: 30px;">
+        <h2 style="font-size: 2rem; font-weight: bold; text-align: center; color: #47663B; margin-bottom: 30px;">
+            Iniciar Sesión
+        </h2>
+        <form method="post" style="display: flex; flex-direction: column; gap: 20px;">
+            {% csrf_token %}
+            
+            <div style="position: relative;">
+                <input 
+                    type="text" 
+                    placeholder="Nombre de usuario" 
+                    name="username"
+                    id="username"
+                    style="width: 100%; padding-left: 40px; padding-right: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; outline: none; font-size: 1rem; transition: border-color 0.3s ease;"
+                    required
+                >
+            </div>
+            
+            <div style="position: relative;">
+                <input 
+                    type="password" 
+                    placeholder="Contraseña" 
+                    name="password"
+                    id="password"
+                    style="width: 100%; padding-left: 40px; padding-right: 40px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; outline: none; font-size: 1rem; transition: border-color 0.3s ease;"
+                    required
+                >
+                <button 
+                    type="button" 
+                    onclick="togglePasswordVisibility(this)"
+                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #ccc; cursor: pointer;">
+                    👁️
+                </button>
+            </div>
+            
+            <button 
+                type="submit" 
+                style="width: 100%; background: linear-gradient(to right, #85A98F, #D3F1DF); color: white; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; transition: opacity 0.3s ease;">
+                Iniciar Sesión
+            </button>
+
+            <!-- <div style="text-align: center; margin-top: 20px;">
+                <a href=% url 'register' %}" style="font-size: 0.9rem; color: #5A6C57; text-decoration: underline;">
+                    ¿No tienes cuenta? Registrarse
+                </a>
+            </div> -->
+        </form>
+    </div>
+</body>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    function togglePasswordVisibility(button) {
+        // Seleccionamos el input de contraseña
+        const passwordInput = document.getElementById('password'); 
+        const icon = button; // El botón que contiene el ícono
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text'; // Mostrar la contraseña
+            icon.textContent = "🙈"; // Cambiar ícono
+        } else {
+            passwordInput.type = 'password'; // Ocultar la contraseña
+            icon.textContent = "👁️"; // Cambiar ícono
+        }
+    }
+</script>
+{% endblock extra_js %}
+

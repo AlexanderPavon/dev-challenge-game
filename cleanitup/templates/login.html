@@ -3,53 +3,55 @@
 {% block title %}Iniciar Sesión{% endblock title %}
 
 {% block content %}
-<body style="font-family: Arial, sans-serif; margin: 0; padding: 0; height: 100vh; background: linear-gradient(to bottom right, #D3F1DF, #85A98F); display: flex; align-items: center; justify-content: center;">
-    <div style="background-color: white; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); border-radius: 15px; width: 100%; max-width: 400px; padding: 30px;">
-        <h2 style="font-size: 2rem; font-weight: bold; text-align: center; color: #47663B; margin-bottom: 30px;">
+<body class="min-h-screen bg-gradient-to-br from-[#D3F1DF] to-[#85A98F] flex items-center justify-center p-4">
+    <div class="bg-white shadow-2xl rounded-2xl w-full max-w-md p-8">
+        <h2 class="text-3xl font-bold text-center text-[#47663B] mb-6">
             Iniciar Sesión
         </h2>
-        <form method="post" style="display: flex; flex-direction: column; gap: 20px;">
+        <form method="post" class="space-y-6">
             {% csrf_token %}
             
-            <div style="position: relative;">
+            <div class="relative">
+                <i class="bi bi-person-fill absolute left-3 top-1/2 transform -translate-y-1/2 text-black-400"></i>
                 <input 
                     type="text" 
                     placeholder="Nombre de usuario" 
                     name="username"
                     id="username"
-                    style="width: 100%; padding-left: 40px; padding-right: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; outline: none; font-size: 1rem; transition: border-color 0.3s ease;"
+                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
                 >
             </div>
             
-            <div style="position: relative;">
+            <div class="relative">
+                <i class="bi bi-lock-fill absolute left-3 top-1/2 transform -translate-y-1/2 text-black-400"></i>
                 <input 
                     type="password" 
                     placeholder="Contraseña" 
                     name="password"
                     id="password"
-                    style="width: 100%; padding-left: 40px; padding-right: 40px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; outline: none; font-size: 1rem; transition: border-color 0.3s ease;"
+                    class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
                 >
                 <button 
                     type="button" 
                     onclick="togglePasswordVisibility(this)"
-                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #ccc; cursor: pointer;">
-                    👁️
+                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #47663B; cursor: pointer;">
+                    <i class="bi bi-eye-slash-fill"></i>
                 </button>
             </div>
             
             <button 
                 type="submit" 
-                style="width: 100%; background: linear-gradient(to right, #85A98F, #D3F1DF); color: white; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; transition: opacity 0.3s ease;">
+                class="w-full bg-gradient-to-r from-[#85A98F] to-[#D3F1DF] text-white py-3 rounded-lg hover:opacity-90 transition-opacity">
                 Iniciar Sesión
             </button>
 
-            <!-- <div style="text-align: center; margin-top: 20px;">
-                <a href=% url 'register' %}" style="font-size: 0.9rem; color: #5A6C57; text-decoration: underline;">
+            <div class="text-center">
+                <a href="{% url 'cleanitup:register' %}" class="text-sm text-[#5A6C57] hover:underline">
                     ¿No tienes cuenta? Registrarse
                 </a>
-            </div> -->
+            </div>
         </form>
     </div>
 </body>
@@ -57,20 +59,23 @@
 {% endblock content %}
 
 {% block extra_js %}
+<script src="https://cdn.tailwindcss.com"></script>
+
+
 <script>
     function togglePasswordVisibility(button) {
-        // Seleccionamos el input de contraseña
-        const passwordInput = document.getElementById('password'); 
-        const icon = button; // El botón que contiene el ícono
-        
+        const passwordInput = document.getElementById('password');
+        const icon = button.querySelector('i');
+
         if (passwordInput.type === 'password') {
             passwordInput.type = 'text'; // Mostrar la contraseña
-            icon.textContent = "🙈"; // Cambiar ícono
+            icon.classList.remove('bi-eye-slash-fill'); 
+            icon.classList.add('bi-eye-fill');
         } else {
             passwordInput.type = 'password'; // Ocultar la contraseña
-            icon.textContent = "👁️"; // Cambiar ícono
+            icon.classList.remove('bi-eye-fill'); 
+            icon.classList.add('bi-eye-slash-fill');
         }
     }
 </script>
-{% endblock extra_js %}
-
+{% endblock extra_js %} 

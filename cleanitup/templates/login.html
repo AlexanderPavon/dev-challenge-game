@@ -3,7 +3,7 @@
 {% block title %}Iniciar Sesión{% endblock title %}
 
 {% block content %}
-<body class="min-h-screen bg-gradient-to-br from-[#D3F1DF] to-[#85A98F] flex items-center justify-center p-4">
+<body class="min-h-screen bg-gradient-to-br from-[#D3F1DF] to-[#85A98F] flex items-center justify-center">
     <div class="bg-white shadow-2xl rounded-2xl w-full max-w-md p-8">
         <h2 class="text-3xl font-bold text-center text-[#47663B] mb-6">
             Iniciar Sesión
@@ -55,12 +55,10 @@
         </form>
     </div>
 </body>
-
 {% endblock content %}
 
 {% block extra_js %}
 <script src="https://cdn.tailwindcss.com"></script>
-
 
 <script>
     function togglePasswordVisibility(button) {
@@ -78,4 +76,5 @@
         }
     }
 </script>
-{% endblock extra_js %} 
+{% endblock extra_js %}
+

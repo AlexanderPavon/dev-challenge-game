@@ -3,54 +3,44 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
-    <title>Clean it up!!!</title>
+    <title>Juego de Atrapar Basura</title>
     <style>
         body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
+            background-color: #f0f0f0;
             font-family: Arial, sans-serif;
-            overflow: hidden;
-        }
-        #videoBackground {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1; /* Poner detrás del resto del contenido */
         }
         #gameContainer {
-            width: 500px; /* Cambiado a 500px */
-            height: 750px; /* Altura del juego */
+            width: 400px;
+            height: 600px;
+            border: 2px solid black;
             position: relative;
             overflow: hidden;
             background-color: transparent;
-            margin: auto;
-            z-index: 1;
         }
         #player {
-            width: 120px; /* Tamaño del jugador */
-            height: 120px;
+            width: 50px;
+            height: 50px;
+            background-color: transparent;
             position: absolute;
             bottom: 20px;
             transition: left 0.1s ease;
         }
         .trash {
-            width: 100px; /* Tamaño de la basura */
-            height: 50px;
+            width: 30px;
+            height: 30px;
+            background-color: transparent;
             position: absolute;
             border-radius: 5px;
-            overflow: hidden;
         }
         #scoreDisplay, #livesDisplay {
             position: absolute;
             top: 10px;
-            font-size: 30px;
-            z-index: 2;
-            color: #C0C78C;
-            background-color: #FEFAE0;
-            border-radius: 10px; /* Aumenta el radio para bordes más redondeados */
-            padding: 10px 20px; /* Aumenta el tamaño del fondo, agrega espacio interno */
+            font-size: 20px;
         }
         #scoreDisplay {
             left: 10px;
@@ -58,23 +48,53 @@
         #livesDisplay {
             right: 10px;
         }
-        #gameOverScreen {
+        #pauseButton {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 10px;
+            background-color: #FFA500;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #pauseScreen {
             display: none;
-            position: fixed; /* Cambiado de absolute a fixed */
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%; /* Ocupa toda la pantalla */
+            height: 100%;
             background-color: rgba(0,0,0,0.7);
             color: white;
-            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            z-index: 3; /* Encima de todo */
+            z-index: 10;
         }
-        #restartButton {
+        #pauseScreenScore {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #gameOverScreen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 10;
+        }
+        #restartButton, #resumeButton {
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 18px;
@@ -84,23 +104,23 @@
             cursor: pointer;
             border-radius: 5px;
         }
-        #restartButton:hover {
+        #restartButton:hover, #resumeButton:hover {
             background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <!-- Video de fondo -->
-    <video id="videoBackground" autoplay muted loop>
-        <source src="{% static 'videos/videofondo.mp4' %}" type="video/mp4">
-        Tu navegador no soporta videos.
-    </video>
-
-    <!-- Contenedor del juego -->
     <div id="gameContainer">
         <div id="scoreDisplay">Puntos: 0</div>
         <div id="livesDisplay">Vidas: 3</div>
+        <button id="pauseButton">Pausar</button>
         <div id="player"></div>
+        
+        <div id="pauseScreen">
+            <h1>Juego Pausado</h1>
+            <div id="pauseScreenScore">Puntos: 0</div>
+            <button id="resumeButton">Continuar</button>
+        </div>
         
         <div id="gameOverScreen">
             <h1>¡Perdiste!</h1>
@@ -115,171 +135,316 @@
         const scoreDisplay = document.getElementById('scoreDisplay');
         const livesDisplay = document.getElementById('livesDisplay');
         const gameOverScreen = document.getElementById('gameOverScreen');
+        const pauseScreen = document.getElementById('pauseScreen');
+        const pauseScreenScore = document.getElementById('pauseScreenScore');
         const finalScoreDisplay = document.getElementById('finalScoreDisplay');
         const restartButton = document.getElementById('restartButton');
-        const videoBackground = document.getElementById('videoBackground');
-        
-        let playerX = 190; // Centrado para el nuevo tamaño del jugador (500px - 120px) / 2
+        const pauseButton = document.getElementById('pauseButton');
+        const resumeButton = document.getElementById('resumeButton');
+        const backgrounds = [
+        'url("../static/imagenes/background1.jpg")', 
+        'url("../static/imagenes/background2.jpg")', 
+        'url("../static/imagenes/background3.jpg")', 
+        'url("../static/imagenes/background4.jpg")',
+        'url("../static/imagenes/background5.jpg")',
+        'url("../static/imagenes/background6.jpg")'  
+        ];
+
+        document.body.style.backgroundImage = backgrounds[0];
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+
+        let playerX = 175;
         let score = 0;
         let lives = 3;
         let gameActive = true;
+        let gamePaused = false;
         let fallSpeedMultiplier = 1;
+        let trashIntervalId;
+        let trashSpawnInterval = 1000; // Intervalo inicial de 1 segundo
+        let trashSpawnDecreaseRate = 20; // Reducción de 20ms cada X puntos
+        let spawnThreshold = 5; // Reducir intervalo cada 5 puntos
+        let currentBackgroundIndex = 0;
 
+        function updateBackground(score) {
+        const changeInterval = 50;
+
+        const newBackgroundIndex = Math.floor(score / changeInterval) % backgrounds.length;
+
+        if (newBackgroundIndex !== currentBackgroundIndex) {
+            currentBackgroundIndex = newBackgroundIndex;
+            document.body.style.backgroundImage = backgrounds[currentBackgroundIndex+1];
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundPosition = 'center';
+        }
+        }
+
+        // Función para verificar colisión mejorada
+        function checkTrashCollision(playerRect, trashRect) {
+            const topCollision = 
+                trashRect.bottom >= playerRect.top &&
+                trashRect.top <= playerRect.bottom &&
+                trashRect.right >= playerRect.left &&
+                trashRect.left <= playerRect.right;
+
+            const sideCollision = 
+                trashRect.right >= playerRect.left &&
+                trashRect.left <= playerRect.right &&
+                trashRect.bottom >= playerRect.top &&
+                trashRect.top <= playerRect.bottom;
+
+            return topCollision || sideCollision;
+        }
+
+        // Configuración inicial del juego
         function initGame() {
-            playerX = 190; // Centrar jugador nuevamente
+            playerX = 175;
             score = 0;
             lives = 3;
             gameActive = true;
+            gamePaused = false;
             fallSpeedMultiplier = 1;
+            trashSpawnInterval = 1000; // Reiniciar intervalo inicial
+
             player.style.left = `${playerX}px`;
             scoreDisplay.textContent = 'Puntos: 0';
+            pauseScreenScore.textContent = 'Puntos: 0';
             livesDisplay.textContent = 'Vidas: 3';
             gameOverScreen.style.display = 'none';
-
-            // Reiniciar el video
-            videoBackground.currentTime = 0; // Reinicia el video desde el inicio
-            videoBackground.play();
-
+            pauseScreen.style.display = 'none';
+            pauseButton.textContent = 'Pausar';
+            
+            // Limpiar cualquier basura restante
             const trashElements = document.querySelectorAll('.trash');
             trashElements.forEach(trash => trash.remove());
-
+            
             player.innerHTML = '<img src="../static/imagenes/player.png" alt="Jugador" style="width: 100%; height: 100%;">';
+            
+            // Limpiar intervalos previos
+            if (trashIntervalId) clearInterval(trashIntervalId);
+            
+            // Reiniciar generación de basura
+            trashIntervalId = setInterval(createTrash, trashSpawnInterval);
         }
 
+        // Configuración del jugador
         player.style.left = `${playerX}px`;
-        player.style.width = '120px'; // Tamaño del jugador
-        player.style.height = '120px';
+        player.style.width = '50px';
+        player.style.height = '50px';
 
+        // Mover jugador con teclas más fluido
         const keys = {
             left: false,
             right: false
         };
 
         document.addEventListener('keydown', (e) => {
+            if (gamePaused || !gameActive) return;
             if (e.key === 'ArrowLeft') keys.left = true;
             if (e.key === 'ArrowRight') keys.right = true;
+            
+            // Pausar con tecla ESC
+            if (e.key === 'Escape') {
+                pauseGame();
+            }
         });
 
         document.addEventListener('keyup', (e) => {
+            if (gamePaused || !gameActive) return;
             if (e.key === 'ArrowLeft') keys.left = false;
             if (e.key === 'ArrowRight') keys.right = false;
         });
 
         function updatePlayerMovement() {
-            if (!gameActive) return;
+            if (!gameActive || gamePaused) return;
 
             if (keys.left && playerX > 0) {
                 playerX -= 5;
             }
-            if (keys.right && playerX < 380) { // Nuevo límite horizontal (500px - ancho del jugador 120px)
+            if (keys.right && playerX < 350) {
                 playerX += 5;
             }
             player.style.left = `${playerX}px`;
         }
 
+        // Bucle de juego para movimiento fluido
         function gameLoop() {
             updatePlayerMovement();
-            if (gameActive) {
-                fallSpeedMultiplier = Math.min(4, 1 + (score * 0.001));
+            
+            // Actualizar velocidad de caída
+            if (gameActive && !gamePaused) {
+                fallSpeedMultiplier = Math.min(3, 1 + (score * 0.01));
             }
+            
             requestAnimationFrame(gameLoop);
         }
         gameLoop();
 
+        // Crear basura
         function createTrash() {
-            if (!gameActive) return;
+            if (!gameActive || gamePaused) return;
 
             const trash = document.createElement('div');
             trash.classList.add('trash');
-            trash.style.left = `${Math.random() * 465}px`; // Ajustado para evitar que la basura salga del área
+            trash.style.left = `${Math.random() * 370}px`;
             trash.style.top = '0px';
-            trash.innerHTML = '<img src="../static/imagenes/trash1.png" alt="Basura" style="width: 100%; height: 100%;">';
+            trash.innerHTML = '<img src="../static/imagenes/trash1.png" alt="Basura" style="width: 60px; height: 40px;">';
             gameContainer.appendChild(trash);
 
+            // Animar basura cayendo
             let trashY = 0;
             let missed = false;
+
             const fallInterval = setInterval(() => {
-                if (!gameActive) {
+                if (!gameActive || gamePaused) {
+                    trash.dataset.fallInterval = fallInterval;
                     clearInterval(fallInterval);
                     return;
                 }
 
-                trashY += 7 * fallSpeedMultiplier;
+                // Velocidad de caída aumenta progresivamente
+                trashY += 5 * fallSpeedMultiplier;
                 trash.style.top = `${trashY}px`;
 
+                // Detectar colisión con el jugador
                 const playerRect = player.getBoundingClientRect();
                 const trashRect = trash.getBoundingClientRect();
 
-                if (
-                    trashRect.bottom >= playerRect.top &&
-                    trashRect.bottom <= playerRect.top + 10 &&
-                    trashRect.right >= playerRect.left &&
-                    trashRect.left <= playerRect.right
-                ) {
+                // Capturar basura si hay colisión
+                if (checkTrashCollision(playerRect, trashRect)) {
                     gameContainer.removeChild(trash);
                     clearInterval(fallInterval);
                     score++;
                     scoreDisplay.textContent = `Puntos: ${score}`;
+                    
+                    updateBackground(score);
+
+                    // Reducir intervalo de generación de basura
+                    if (score % spawnThreshold === 0) {
+                        clearInterval(trashIntervalId);
+                        trashSpawnInterval = Math.max(400, trashSpawnInterval - trashSpawnDecreaseRate);
+                        trashIntervalId = setInterval(createTrash, trashSpawnInterval);
+                    }
                 }
 
-                if (trashY > 710 && !missed) { // Nuevo límite de caída
+                // Detectar cuando la basura toca el suelo
+                if (trashY > 550 && !missed) {
                     missed = true;
                     lives--;
                     livesDisplay.textContent = `Vidas: ${lives}`;
                     gameContainer.removeChild(trash);
                     clearInterval(fallInterval);
 
+                    // Fin del juego si se acaban las vidas
                     if (lives <= 0) {
                         gameActive = false;
                         finalScoreDisplay.textContent = `Puntuación final: ${score}`;
                         gameOverScreen.style.display = 'flex';
-
-                        // Detener el video al perder
-                        videoBackground.pause();
                     }
                 }
             }, 50);
         }
 
-        const trashInterval = setInterval(createTrash, 1000);
+        // Pausar juego
+        function pauseGame() {
+            if (!gameActive) return;
+            
+            gamePaused = !gamePaused;
+            
+            if (gamePaused) {
+                // Pausar
+                pauseButton.textContent = 'Continuar';
+                pauseScreen.style.display = 'flex';
+                pauseScreenScore.textContent = `Puntos: ${score}`;
+                clearInterval(trashIntervalId);
 
-        restartButton.addEventListener('click', initGame);
+                // Detener todos los intervalos de caída de basura existentes
+                const trashElements = document.querySelectorAll('.trash');
+                trashElements.forEach(trash => {
+                    trash.dataset.pausedY = trash.style.top;
+                    trash.dataset.fallInterval = trash.dataset.fallInterval || 'active';
+                });
+            } else {
+                // Reanudar
+                pauseButton.textContent = 'Pausar';
+                pauseScreen.style.display = 'none';
+                
+                const trashElements = document.querySelectorAll('.trash');
+                trashElements.forEach(trash => {
+                    const oldInterval = trash.dataset.fallInterval;
+                    if (oldInterval && oldInterval !== 'active') {
+                        clearInterval(parseInt(oldInterval));
+                    }
 
-        initGame();
+                    let trashY = parseFloat(trash.dataset.pausedY || '0');
+                    let missed = false;
 
-        // Después de perder o al final de la partida
-        fetch('/game/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': getCookie('csrftoken')  // Necesitarás una función para obtener el token CSRF
-            },
-            body: `score=${score}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Puntaje guardado');
-                // Puedes mostrar el mejor puntaje si quieres
+                    // Crear nuevo intervalo para cada elemento de basura
+                    const fallInterval = setInterval(() => {
+                        if (!gameActive || gamePaused) {
+                            trash.dataset.fallInterval = fallInterval;
+                            clearInterval(fallInterval);
+                            return;
+                        }
+
+                        trashY += 5 * fallSpeedMultiplier;
+                        trash.style.top = `${trashY}px`;
+
+                        const playerRect = player.getBoundingClientRect();
+                        const trashRect = trash.getBoundingClientRect();
+
+                        // Capturar basura si hay colisión
+                        if (checkTrashCollision(playerRect, trashRect)) {
+                            gameContainer.removeChild(trash);
+                            clearInterval(fallInterval);
+                            score++;
+                            scoreDisplay.textContent = `Puntos: ${score}`;
+
+                            // Reducir intervalo de generación de basura
+                            if (score % spawnThreshold === 0) {
+                                clearInterval(trashIntervalId);
+                                trashSpawnInterval = Math.max(400, trashSpawnInterval - trashSpawnDecreaseRate);
+                                trashIntervalId = setInterval(createTrash, trashSpawnInterval);
+                            }
+                        }
+
+                        // Detectar cuando la basura toca el suelo
+                        if (trashY > 550 && !missed) {
+                            missed = true;
+                            lives--;
+                            livesDisplay.textContent = `Vidas: ${lives}`;
+                            gameContainer.removeChild(trash);
+                            clearInterval(fallInterval);
+
+                            // Fin del juego si se acaban las vidas
+                            if (lives <= 0) {
+                                gameActive = false;
+                                finalScoreDisplay.textContent = `Puntuación final: ${score}`;
+                                gameOverScreen.style.display = 'flex';
+                            }
+                        }
+                    }, 50);
+                });
+
+                // Reiniciar generación de basura
+                trashIntervalId = setInterval(createTrash, trashSpawnInterval);
+            }
+        }
+
+        // Pausar cuando se minimiza o sale del foco
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden' && gameActive && !gamePaused) {
+                pauseGame();
             }
         });
 
-        // Función para obtener cookie CSRF (la necesitarás añadir)
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
+        // Botones de control
+        pauseButton.addEventListener('click', pauseGame);
+        resumeButton.addEventListener('click', pauseGame);
+        restartButton.addEventListener('click', initGame);
 
+        // Iniciar juego
+        initGame();
     </script>
 </body>
 </html>

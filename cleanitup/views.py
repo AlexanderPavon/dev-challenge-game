@@ -10,6 +10,23 @@ def index(request):
     """Vista de página principal"""
     return render(request, 'index.html')
 
+
+
+
+def about_us(request):
+    return render(request, 'aboutus.html')
+
+def ranking(request):
+    return render(request, 'ranking.html')
+
+def plantations(request):
+    return render(request, 'plantations.html')
+
+def know_more(request):
+    return render(request, 'knowmore.html')
+
+
+
 @require_http_methods(["GET", "POST"])
 def register_view(request):
     """Vista de registro de usuario"""
@@ -19,7 +36,7 @@ def register_view(request):
             user = form.save()
             # Opcional: Iniciar sesión automáticamente después del registro
             # login(request, user)
-            return redirect('login')
+            return redirect('cleanitup:login')
     else:
         form = PlayerRegistrationForm()
     
@@ -49,7 +66,7 @@ def login_view(request):
 def logout_view(request):
     """Vista de cierre de sesión"""
     logout(request)
-    return redirect('login')
+    return redirect('cleanitup:index')
 
 @login_required
 def game_view(request):

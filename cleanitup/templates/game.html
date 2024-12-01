@@ -3,7 +3,7 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
-    <title>Playing</title>
+    <title>Juego de Atrapar Basura</title>
     <style>
         body {
             display: flex;
@@ -17,10 +17,13 @@
         #gameContainer {
             width: 400px;
             height: 600px;
-            border: 5px solid black;
+            border: 5px solid rgb(50, 143, 219);
+            border-radius: 15px;
             position: relative;
             overflow: hidden;
             background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro y transparente */;
+
+
         }
         #player {
             width: 50px;
@@ -41,7 +44,7 @@
             position: absolute;
             top: 10px;
             font-size: 20px;
-            background: #4CAF50;
+            background: linear-gradient(135deg, #A1C4FD, #C2E9FB);
             padding: 6px;
             border-radius: 10px;
         }
@@ -57,7 +60,7 @@
             left: 50%;
             transform: translateX(-50%);
             padding: 5px 10px;
-            background-color: #4CAF50;
+            background-color: rgb(50, 143, 219);
             color: black;
             border: none;
             cursor: pointer;
@@ -101,14 +104,11 @@
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 18px;
-            background-color: #4CAF50;
+            background-color: rgb(50, 143, 219);
             color: white;
             border: none;
             cursor: pointer;
             border-radius: 5px;
-        }
-        #restartButton:hover, #resumeButton:hover {
-            background-color: #45a049;
         }
     </style>
 </head>

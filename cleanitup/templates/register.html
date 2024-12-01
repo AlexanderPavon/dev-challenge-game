@@ -11,58 +11,58 @@
         <form method="post" class="space-y-6">
             {% csrf_token %}
         
+            <!-- Manejo de errores de formulario -->
+            {% if form.errors %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        
             <!-- Campo de Nombre de Usuario -->
             <div class="relative">
                 <i class="bi bi-person-fill absolute left-3 top-1/2 transform -translate-y-1/2 text-black-400"></i>
-                <input 
-                    type="text" 
-                    placeholder="Nombre de usuario" 
-                    name="username"
-                    id="username"
-                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    value="{{ form.username.value|default:'' }}"
-                    required
-                >
-                
+                {{ form.username }}
+                <!-- Puedes añadir mensajes de error específicos si lo deseas -->
+                {% if form.username.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.username.errors.0 }}</p>
+                {% endif %}
             </div>
-            
         
             <!-- Contraseña -->
             <div class="relative">
                 <i class="bi bi-lock-fill absolute left-3 top-1/2 transform -translate-y-1/2 text-black-400"></i>
-                <input 
-                    type="password" 
-                    placeholder="Contraseña" 
-                    name="password"
-                    id="password"
-                    class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    required
-                >
+                {{ form.password1 }}
                 <button 
                     type="button" 
-                    onclick="togglePasswordVisibility(this, 'password')"
+                    onclick="togglePasswordVisibility(this, 'id_password1')"
                     style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #47663B; cursor: pointer;">
                     <i class="bi bi-eye-slash-fill"></i>
                 </button>
+                {% if form.password1.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.password1.errors.0 }}</p>
+                {% endif %}
             </div>
         
             <!-- Confirmar Contraseña -->
             <div class="relative">
                 <i class="bi bi-lock-fill absolute left-3 top-1/2 transform -translate-y-1/2 text-black-400"></i>
-                <input 
-                    type="password" 
-                    placeholder="Confirmar Contraseña" 
-                    name="password_confirm"
-                    id="password_confirm"
-                    class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    required
-                >
+                {{ form.password2 }}
                 <button 
                     type="button" 
-                    onclick="togglePasswordVisibility(this, 'password_confirm')"
+                    onclick="togglePasswordVisibility(this, 'id_password2')"
                     style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #47663B; cursor: pointer;">
                     <i class="bi bi-eye-slash-fill"></i>
                 </button>
+                {% if form.password2.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.password2.errors.0 }}</p>
+                {% endif %}
             </div>
         
             <!-- Botón de Registro -->
@@ -81,27 +81,39 @@
         </form>
     </div>
 </body>
-
 {% endblock content %}
 
 {% block extra_js %}
 <script src="https://cdn.tailwindcss.com"></script>
 
 <script>
+    // Modificar los campos para que tengan las clases de Tailwind
+    document.getElementById('id_username').classList.add(
+        'w-full', 'pl-10', 'pr-4', 'py-3', 'border', 'border-gray-300', 
+        'rounded-lg', 'focus:outline-none', 'focus:ring-2', 'focus:ring-green-500'
+    );
+    document.getElementById('id_password1').classList.add(
+        'w-full', 'pl-10', 'pr-10', 'py-3', 'border', 'border-gray-300', 
+        'rounded-lg', 'focus:outline-none', 'focus:ring-2', 'focus:ring-green-500'
+    );
+    document.getElementById('id_password2').classList.add(
+        'w-full', 'pl-10', 'pr-10', 'py-3', 'border', 'border-gray-300', 
+        'rounded-lg', 'focus:outline-none', 'focus:ring-2', 'focus:ring-green-500'
+    );
+
     function togglePasswordVisibility(button, inputId) {
-        const passwordInput = document.getElementById(inputId); // Usar el inputId recibido
-        const icon = button.querySelector('i'); // Obtener el icono dentro del botón
+        const passwordInput = document.getElementById(inputId);
+        const icon = button.querySelector('i');
 
         if (passwordInput.type === 'password') {
-            passwordInput.type = 'text'; // Cambiar a texto para mostrar la contraseña
-            icon.classList.remove('bi-eye-slash-fill');  // Quitar el icono de "ocultar"
-            icon.classList.add('bi-eye-fill');  // Agregar el icono de "mostrar"
+            passwordInput.type = 'text';
+            icon.classList.remove('bi-eye-slash-fill');
+            icon.classList.add('bi-eye-fill');
         } else {
-            passwordInput.type = 'password'; // Cambiar a tipo "password" para ocultar la contraseña
-            icon.classList.remove('bi-eye-fill');  // Quitar el icono de "mostrar"
-            icon.classList.add('bi-eye-slash-fill'); // Agregar el icono de "ocultar"
+            passwordInput.type = 'password';
+            icon.classList.remove('bi-eye-fill');
+            icon.classList.add('bi-eye-slash-fill');
         }
     }
 </script>
-
 {% endblock extra_js %}

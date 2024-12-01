@@ -21,8 +21,8 @@ from proyecto import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('cleanitup.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('', include(('cleanitup.urls', 'cleanitup'), namespace='cleanitup')),
+    path('/', include('django.contrib.auth.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

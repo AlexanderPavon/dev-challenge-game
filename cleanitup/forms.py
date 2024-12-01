@@ -1,21 +1,19 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from .models import Player
 
-class PlayerForm(forms.ModelForm):
-    password_confirm = forms.CharField(widget=forms.PasswordInput, label="Confirmar Contraseña")
+class PlayerRegistrationForm(UserCreationForm):
+    """Formulario personalizado de registro"""
+    email = forms.EmailField(required=False)
 
     class Meta:
         model = Player
-        fields = ['username', 'password']
-        widgets = {
-            'password': forms.PasswordInput(),
-        }
-    
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get("password")
-        password_confirm = cleaned_data.get("password_confirm")
+        fields = ['username', 'email', 'password1', 'password2']
 
-        if password and password_confirm and password != password_confirm:
-            raise forms.ValidationError("Las contraseñas no coinciden.")
-        return cleaned_data
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if self.cleaned_data['email']:
+            user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+        return user

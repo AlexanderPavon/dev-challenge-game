@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <title>Clean it up!!!</title>
     <style>
@@ -91,7 +92,7 @@
 <body>
     <!-- Video de fondo -->
     <video id="videoBackground" autoplay muted loop>
-        <source src="../static/videos/videofondo.mp4" type="video/mp4">
+        <source src="{% static 'videos/videofondo.mp4' %}" type="video/mp4">
         Tu navegador no soporta videos.
     </video>
 
@@ -142,7 +143,7 @@
             const trashElements = document.querySelectorAll('.trash');
             trashElements.forEach(trash => trash.remove());
 
-            player.innerHTML = '<img src="../static/player.png" alt="Jugador" style="width: 100%; height: 100%;">';
+            player.innerHTML = '<img src="../static/imagenes/player.png" alt="Jugador" style="width: 100%; height: 100%;">';
         }
 
         player.style.left = `${playerX}px`;
@@ -192,7 +193,7 @@
             trash.classList.add('trash');
             trash.style.left = `${Math.random() * 465}px`; // Ajustado para evitar que la basura salga del área
             trash.style.top = '0px';
-            trash.innerHTML = '<img src="../static/trash1.png" alt="Basura" style="width: 100%; height: 100%;">';
+            trash.innerHTML = '<img src="../static/imagenes/trash1.png" alt="Basura" style="width: 100%; height: 100%;">';
             gameContainer.appendChild(trash);
 
             let trashY = 0;
@@ -245,6 +246,40 @@
         restartButton.addEventListener('click', initGame);
 
         initGame();
+
+        // Después de perder o al final de la partida
+        fetch('/game/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCookie('csrftoken')  // Necesitarás una función para obtener el token CSRF
+            },
+            body: `score=${score}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Puntaje guardado');
+                // Puedes mostrar el mejor puntaje si quieres
+            }
+        });
+
+        // Función para obtener cookie CSRF (la necesitarás añadir)
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
     </script>
 </body>
 </html>

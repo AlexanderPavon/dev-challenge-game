@@ -41,7 +41,7 @@ def login_view(request):
         if user is not None:
             # Iniciar sesión
             login(request, user)
-            return redirect('cleanitup:home')  # Redirigir a la página de inicio o dashboard
+            return redirect('cleanitup:testgame')  # Redirigir a la página de inicio o dashboard
         else:
             # Mostrar mensaje de error
             messages.error(request, 'Usuario o contraseña incorrectos.')

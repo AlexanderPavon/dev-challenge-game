@@ -11,7 +11,7 @@
         <form method="post" class="space-y-6">
             {% csrf_token %}
         
-            <!-- Manejo de errores de formulario -->
+            <!-- Errores deL formulario -->
             {% if form.errors %}
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                     {% for field in form %}
@@ -29,7 +29,7 @@
             <div class="relative">
                 <i class="bi bi-person-fill absolute left-3 top-1/2 transform -translate-y-1/2 text-black-400"></i>
                 {{ form.username }}
-                <!-- Puedes añadir mensajes de error específicos si lo deseas -->
+
                 {% if form.username.errors %}
                     <p class="text-red-500 text-sm mt-1">{{ form.username.errors.0 }}</p>
                 {% endif %}
@@ -87,7 +87,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <script>
-    // Modificar los campos para que tengan las clases de Tailwind
+
     document.getElementById('id_username').classList.add(
         'w-full', 'pl-10', 'pr-4', 'py-3', 'border', 'border-gray-300', 
         'rounded-lg', 'focus:outline-none', 'focus:ring-2', 'focus:ring-green-500'

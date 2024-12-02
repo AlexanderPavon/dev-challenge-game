@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saber Más</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #78a485;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+        }
+
+        nav {
+            background: linear-gradient(90deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%);
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #90EE90;
+            transform: translateY(-2px);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: #b7e4c7;
+            transition: all 0.3s;
+            transform: translateX(-50%);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: #b7e4c7;
+            transition: all 0.3s;
+            transform: translateX(-50%);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        nav ul:first-of-type {
+            justify-content: center; /* Centra los enlaces */
+            flex-grow: 1; /*  La lista pueda ocupar todo el espacio disponible */
+        }
+
+        .section {
+            margin-top: 60px;
+            width: 90%;
+            max-width: 1200px;
+            padding: 2rem;
+            text-align: center;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h1 {
+            font-size: 3rem;
+            color: #2d6a4f;
+            margin-bottom: 2rem;
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            color: #40916c;
+            margin-bottom: 1rem;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background-color: #b7e4c7; 
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card h3 {
+            color: #2d6a4f;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            color: #555;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="{% url 'cleanitup:index' %}">Inicio</a></li>
+            <li><a href="{% url 'cleanitup:aboutus' %}">Conócenos</a></li>
+            <li><a href="{% url 'cleanitup:ranking' %}">Ranking</a></li>
+            <li><a href="{% url 'cleanitup:plantations' %}">🌱Plantaciones🌱</a></li>
+        </ul>
+    </nav>
+
+    <section class="section">
+        <h1>Saber Más</h1>
+        <h2>Problemas ambientales actuales</h2>
+        <div class="cards-container">
+            <div class="card">
+                <h3>Deforestación acelerada</h3>
+                <p>La deforestación está contribuyendo al cambio climático y la pérdida de biodiversidad. Cada año, millones de hectáreas de bosques desaparecen, afectando la vida silvestre y alterando el equilibrio de los ecosistemas.</p>
+            </div>
+            <div class="card">
+                <h3>Especies en peligro de extinción</h3>
+                <p>Muchas especies de animales, como el oso polar y el tigre de Bengala, están en peligro de extinción debido a la caza furtiva y la destrucción de su hábitat natural, lo que amenaza la biodiversidad del planeta.</p>
+            </div>
+            <div class="card">
+                <h3>Contaminación plástica</h3>
+                <p>Los plásticos contaminan los océanos, matando a miles de especies marinas cada año. El uso excesivo de plásticos de un solo uso es una de las principales causas de la contaminación ambiental.</p>
+            </div>
+            <div class="card">
+                <h3>Calentamiento global</h3>
+                <p>El aumento de la temperatura global debido a la actividad humana está alterando los patrones climáticos, afectando a las comunidades y especies que dependen de un clima estable para sobrevivir.</p>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

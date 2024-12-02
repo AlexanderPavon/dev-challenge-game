@@ -21,7 +21,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             z-index: 10;
             display: flex;
-            justify-content: space-between; /* Distribuye las listas */
+            justify-content: space-between; 
             align-items: center;
         }
 
@@ -34,7 +34,7 @@
         /* Para la lista principal, centramos los elementos */
         nav ul:first-of-type {
             justify-content: center; /* Centra los enlaces */
-            flex-grow: 1; /* Permite que esta lista ocupe todo el espacio disponible */
+            flex-grow: 1; /* La lista pueda ocupar todo el espacio disponible */
         }
 
         nav a {
@@ -214,10 +214,10 @@
     {% if user.is_authenticated %}
     <nav>
         <ul>
-            <li><a href="#Inicio">Conocenos</a></li>
-            <li><a href="#Jugar">Ranking</a></li>
-            <li><a href="#Jugar">🌱Plantacion🌱</a></li>
-            <li><a href="#Consejos">Saber más!</a></li>
+            <li><a href="{% url 'cleanitup:aboutus' %}">Conocenos</a></li>
+            <li><a href="{% url 'cleanitup:ranking' %}">Ranking</a></li>
+            <li><a href="{% url 'cleanitup:plantations' %}">🌱Plantaciones🌱</a></li>
+            <li><a href="{% url 'cleanitup:knowmore' %}">Saber más!</a></li>
         </ul>
         <ul>
             <li><a href="{% url 'cleanitup:logout' %}" id="logoutButton">Cerrar Sesión</a></li>

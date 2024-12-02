@@ -75,13 +75,12 @@ def game_view(request):
         try:
             score = int(request.POST.get('score', 0))
             
-            # Obtener o crear registro de GameData para el usuario actual
             game_data, created = GameData.objects.get_or_create(player=request.user)
             
-            # Actualizar último puntaje
+            # Actualizar el último puntaje
             game_data.last_score = score
             
-            # Actualizar mejor puntaje si es necesario
+            # Actualizar el mejor puntaje
             if score > game_data.best_score:
                 game_data.best_score = score
             
@@ -99,7 +98,7 @@ def game_view(request):
                 'message': f'Error al guardar puntaje: {str(e)}'
             }, status=400)
     
-    # Obtener mejor puntaje para mostrar en el juego
+    # Obtener el mejor puntaje
     game_data, _ = GameData.objects.get_or_create(player=request.user)
     
     return render(request, 'game.html', {'best_score': game_data.best_score})
